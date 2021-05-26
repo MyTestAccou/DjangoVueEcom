@@ -14,7 +14,7 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_urls(self):
+    def get_absolute_url(self):
         return f'/{self.slug}/'
 
 class Product(models.Model):
@@ -34,23 +34,23 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_urls(self):
+    def get_absolute_url(self):
         return f'/{self.category.slug}/{self.slug}/'
 
     def get_image(self):
         if self.image:
-            return 'http://127.0.0.1:8080' + self.image.url
+            return 'http://127.0.0.1:8000' + self.image.url
         return ''
 
-    def get_thubnail(self):
+    def get_thumbnail(self):
         if self.thumbnail:
-            return 'http://127.0.0.1:8080' + self.thumbnail.url
+            return 'http://127.0.0.1:8000' + self.thumbnail.url
         else:
             if self.image:
                 self.thumbnail = self.make_thubnail(self.image)
                 self.save()
 
-                return 'http://127.0.0.1:8080' + self.thumbnail.url
+                return 'http://127.0.0.1:8000' + self.thumbnail.url
             else:
                 return ''
 
@@ -62,7 +62,8 @@ class Product(models.Model):
         thumb_to = BytesIO()
         img.save(thumb_to, 'JPEG', quality=85)
 
-        thumbnail = File(thumb_to, name=image.name)
+        # add , for dont get err SuspiciousFileOperation at /api/v1/latest-products/
+        thumbnail = File(thumb_to, name=image.name.replace("uploads/",""))
 
         return thumbnail
 
